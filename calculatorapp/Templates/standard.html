@@ -1,0 +1,168 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+<style>
+  body {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    min-height: 100vh;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem;
+  }
+
+  .calculator-container {
+    background: #ffffff;
+    border-radius: 25px;
+    padding: 40px 30px;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+    width: 100%;
+    max-width: 380px;
+  }
+
+  h2 {
+    font-weight: 700;
+    color: #4b4b7c;
+    margin-bottom: 30px;
+    text-align: center;
+    letter-spacing: 1px;
+  }
+
+  #live-display {
+    background: #f3f4f6;
+    border-radius: 15px;
+    padding: 20px;
+    font-size: 26px;
+    font-weight: 600;
+    color: #222;
+    box-shadow: inset 0 3px 6px rgba(0, 0, 0, 0.08);
+    margin-bottom: 30px;
+    overflow-x: auto;
+    min-height: 60px;
+    text-align: right;
+    user-select: text;
+  }
+
+  .buttons-container {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+  }
+
+  button {
+    padding: 18px 0;
+    font-size: 22px;
+    font-weight: 600;
+    border-radius: 12px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    user-select: none;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+  }
+
+  .btn-outline-dark {
+    background: #ececec;
+    color: #333;
+  }
+
+  .btn-outline-dark:hover {
+    background: #d6d6d6;
+    color: #000;
+    transform: translateY(-2px);
+  }
+
+  .btn-danger {
+    background: #ff4e42;
+    color: #fff;
+  }
+
+  .btn-danger:hover {
+    background: #d93d34;
+    transform: translateY(-2px);
+  }
+
+  .btn-success {
+    background: #34c759;
+    color: #fff;
+  }
+
+  .btn-success:hover {
+    background: #28a745;
+    transform: translateY(-2px);
+  }
+
+  .btn-link {
+    font-size: 16px;
+    font-weight: 600;
+    color: #4b4b7c;
+    text-align: center;
+    display: block;
+    margin-top: 2rem;
+  }
+
+  .btn-link:hover {
+    color: #2a2a59;
+    text-decoration: underline;
+  }
+
+  @media (max-width: 450px) {
+    .calculator-container {
+      padding: 30px 20px;
+    }
+
+    button {
+      font-size: 20px;
+      padding: 14px 0;
+    }
+
+    #live-display {
+      font-size: 22px;
+      padding: 15px 12px;
+    }
+  }
+</style>
+
+<div class="calculator-container animate__animated animate__fadeInUp">
+  <h2>🧮 Standard Calculator</h2>
+
+  <form method="POST" id="calc-form" class="text-center">
+    {% csrf_token %}
+    <input type="hidden" name="expression" id="expression" value="{{ expression }}">
+
+    <!-- Expression Display -->
+    <div id="live-display" aria-live="polite" aria-atomic="true">
+      {{ expression }}{% if result %} = <strong>{{ result }}</strong>{% endif %}
+    </div>
+
+    <!-- Buttons Grid -->
+    <div class="buttons-container">
+      {% for btn in "789/456*123-0.C+=" %}
+        {% if btn == "C" %}
+          <button type="button" class="btn btn-danger" onclick="clearInput()">C</button>
+        {% elif btn == "=" %}
+          <button type="submit" class="btn btn-success">=</button>
+        {% else %}
+          <button type="button" class="btn btn-outline-dark" onclick="appendChar('{{ btn }}')">{{ btn }}</button>
+        {% endif %}
+      {% endfor %}
+    </div>
+  </form>
+</div>
+
+<script>
+  const expressionInput = document.getElementById('expression');
+  const liveDisplay = document.getElementById('live-display');
+
+  function appendChar(char) {
+    expressionInput.value += char;
+    liveDisplay.textContent = expressionInput.value;
+  }
+
+  function clearInput() {
+    expressionInput.value = '';
+    liveDisplay.textContent = '';
+  }
+</script>
+{% endblock %}
